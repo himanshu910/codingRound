@@ -1,89 +1,139 @@
-import com.sun.javafx.PlatformUtil;
+package test;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import com.google.common.base.Function;
 
 public class FlightBookingTest {
 
-    WebDriver driver = new ChromeDriver();
+	static WebDriver driver;
+	public static String websiteUrl = "https://www.cleartrip.com/";
+	public static String chromeDriverPath =
 
+			"C:\\Users\\RB\\Documents\\GitHub\\gitrepo\\codingRound\\chromedriver.exe";
+	// System.getProperty("user.home") + "\\chromedriver.exe";
+	// ******Flight Booking**********//
+	@FindBy(id = "travellersOnhome")
+	public static WebElement travellerSelection;
+	@FindBy(id = "OneWay")
+	public static WebElement OneWay;
+	@FindBy(id = "FromTag")
+	public static WebElement FromTag;
+	@FindBy(xpath = "//input[@id='ToTag']")
+	public static WebElement toTag;
+	@FindBy(id = "SearchBtn")
+	public static WebElement SearchBtn;
+	@FindBy(className = "SearchBtn")
+	public static WebElement searchSummary;
+	@FindBy(id = "ui-id-1")
+	public static WebElement ui_id_1;
+	@FindBy(id = "ui-id-2")
+	public static WebElement ui_id_2;
+	@FindBy(xpath = "//*[@id='ui-datepicker-div']/div[1]/table/tbody/tr[3]/td[7]/a")
+	public static WebElement datepicker;
 
-    @Test
-    public void testThatResultsAppearForAOneWayJourney() {
+	public static void OneWay() {
+		OneWay.click();
+	}
 
-        setDriverPath();
-        driver.get("https://www.cleartrip.com/");
-        waitFor(2000);
-        driver.findElement(By.id("OneWay")).click();
+	public static void FromTag() {
+		FromTag.clear();
+		FromTag.sendKeys("Bangalore");
+	}
 
-        driver.findElement(By.id("FromTag")).clear();
-        driver.findElement(By.id("FromTag")).sendKeys("Bangalore");
+	public static void toTag() {
+		toTag.clear();
+		toTag.sendKeys("Delhi");
+	}
 
-        //wait for the auto complete options to appear for the origin
+	public static void SearchBtn() {
+		SearchBtn.click();
+	}
 
-        waitFor(2000);
-        List<WebElement> originOptions = driver.findElement(By.id("ui-id-1")).findElements(By.tagName("li"));
-        originOptions.get(0).click();
+	@Test
+	public static void testThatResultsAppearForAOneWayJourney() {
 
-        driver.findElement(By.id("toTag")).clear();
-        driver.findElement(By.id("toTag")).sendKeys("Delhi");
+		OneWay();
 
-        //wait for the auto complete options to appear for the destination
+		FromTag();
+		// wait for the auto complete options to appear for the origin
 
-        waitFor(2000);
-        //select the first item from the destination auto complete list
-        List<WebElement> destinationOptions = driver.findElement(By.id("ui-id-2")).findElements(By.tagName("li"));
-        destinationOptions.get(0).click();
+		waitFor(2);
+		List<WebElement> originOptions = ui_id_1.findElements(By.tagName("li"));
+		originOptions.get(0).click();
 
-        driver.findElement(By.xpath("//*[@id='ui-datepicker-div']/div[1]/table/tbody/tr[3]/td[7]/a")).click();
+		toTag();
 
-        //all fields filled in. Now click on search
-        driver.findElement(By.id("SearchBtn")).click();
+		// wait for the auto complete options to appear for the destination
 
-        waitFor(5000);
-        //verify that result appears for the provided journey search
-        Assert.assertTrue(isElementPresent(By.className("searchSummary")));
+		waitFor(2);
+		// select the first item from the destination auto complete list
+		List<WebElement> destinationOptions = ui_id_2.findElements(By.tagName("li"));
+		destinationOptions.get(0).click();
+		datepicker.click();
+		// all fields filled in. Now click on search
+		SearchBtn();
+		waitFor(5);
+		// verify that result appears for the provided journey search
+		Assert.assertTrue(isElementPresent(By.id("SearchBtn")));
 
-        //close the browser
-        driver.quit();
+	}
 
-    }
+	public static boolean isElementPresent(By by) {
+		try {
+			driver.findElements(by);
+			return true;
+		} catch (NoSuchElementException e) {
+			return false;
+		}
+	}
 
+	public static void waitFor(int durationInSeconds) {
+		try {
+			Thread.sleep(durationInSeconds * 1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace(); // To change body of catch statement use File |
+									// Settings | File Templates.
+		}
+	}
 
-    private void waitFor(int durationInMilliSeconds) {
-        try {
-            Thread.sleep(durationInMilliSeconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
+	@BeforeMethod
+	public void setup() {
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--disable-notifications");
 
+		System.setProperty("webdriver.chrome.driver", chromeDriverPath);
+		;
+		driver = new ChromeDriver(options);
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		driver.get(websiteUrl);
+		PageFactory.initElements(driver, FlightBookingTest.class);
+	}
 
-    private boolean isElementPresent(By by) {
-        try {
-            driver.findElement(by);
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
+	@AfterMethod
+	public void tearDown() {
+		if (driver != null) {
+			 driver.quit();
+		}
+	}
 
-    private void setDriverPath() {
-        if (PlatformUtil.isMac()) {
-            System.setProperty("webdriver.chrome.driver", "chromedriver");
-        }
-        if (PlatformUtil.isWindows()) {
-            System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-        }
-        if (PlatformUtil.isLinux()) {
-            System.setProperty("webdriver.chrome.driver", "chromedriver_linux");
-        }
-    }
 }
