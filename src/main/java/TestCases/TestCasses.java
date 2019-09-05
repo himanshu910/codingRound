@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -17,50 +18,50 @@ public class TestCasses extends BaseClass {
 	
 	@Test(priority = 0)
 	public static void shouldThrowAnErrorIfSignInDetailsAreMissingTest() throws InterruptedException {
-
-		SignInTest.Yourtrips();
-		SignInTest.SignIn();
-		SignInTest.signInButton();
-		SignInTest.errorsmsg();
+		SignInTest sit = PageFactory.initElements(driver, SignInTest.class);
+		sit.Yourtrips();
+		sit.SignIn();
+		sit.signInButton();
+		sit.errorsmsg();
 	}
 	
 	@Test
 	public static void testThatResultsAppearForAOneWayJourney() {
+		FlightBookingTest fbt = PageFactory.initElements(driver, FlightBookingTest.class);
+		fbt.OneWay();
 
-		FlightBookingTest.OneWay();
-
-		FlightBookingTest.FromTag();
+		fbt.FromTag();
 		// wait for the auto complete options to appear for the origin
 
-		FlightBookingTest.waitFor(2);
-		List<WebElement> originOptions = FlightBookingTest.ui_id_1.findElements(By.tagName("li"));
+		fbt.waitFor(2);
+		List<WebElement> originOptions = fbt.ui_id_1.findElements(By.tagName("li"));
 		originOptions.get(0).click();
 
-		FlightBookingTest.toTag();
+		fbt.toTag();
 
 		// wait for the auto complete options to appear for the destination
 
-		FlightBookingTest.waitFor(2);
+		fbt.waitFor(2);
 		// select the first item from the destination auto complete list
-		List<WebElement> destinationOptions = FlightBookingTest.ui_id_2.findElements(By.tagName("li"));
+		List<WebElement> destinationOptions = fbt.ui_id_2.findElements(By.tagName("li"));
 		destinationOptions.get(0).click();
-		FlightBookingTest.datepicker.click();
+		fbt.datepicker.click();
 		// all fields filled in. Now click on search
-		FlightBookingTest.SearchBtn();
-		FlightBookingTest.waitFor(5);
+		fbt.SearchBtn();
+		fbt.waitFor(5);
 		// verify that result appears for the provided journey search
-		Assert.assertTrue(FlightBookingTest.isElementPresent(By.id("SearchBtn")));
+		Assert.assertTrue(fbt.isElementPresent(By.id("SearchBtn")));
 
 	}
 	
 	@Test
 	public void shouldBeAbleToSearchForHotels() {
-
-		HotelBookingTest.hotelLink();
-		HotelBookingTest.localityTextBox();
-		HotelBookingTest.checkdate(24);
-		HotelBookingTest.travellerSelection();
-		HotelBookingTest.searchButton();
+		HotelBookingTest hbt = PageFactory.initElements(driver, HotelBookingTest.class);
+		hbt.hotelLink();
+		hbt.localityTextBox();
+		hbt.checkdate(24);
+		hbt.travellerSelection();
+		hbt.searchButton();
 
 	}
 	

@@ -51,15 +51,11 @@ public class SignInTest extends BaseClass {
 	}
 
 
+	public SignInTest(WebDriver driver){
+		this.driver=driver;
+		}
 
-	@Test(priority = 0)
-	public static void shouldThrowAnErrorIfSignInDetailsAreMissingTest() throws InterruptedException {
-
-		Yourtrips();
-		SignIn();
-		signInButton();
-		errorsmsg();
-	}
+	
 
 
 
