@@ -4,9 +4,8 @@
   <test name="Test">
     <classes>
    
-      <class name="test.SignInTest"/>
-      <class name="test.FlightBookingTest"/>
-      <class name="test.HotelBookingTest"/>
+      <class name="TestCases.TestCasses"/>
+      
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->
